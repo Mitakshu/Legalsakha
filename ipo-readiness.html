@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"><link rel="icon" href="favicon.png"><title>Service | LegalSakha</title></head><body>
+<section class="sh"><div class="wrap"><div><div class="crumb"><a href="index.html">Home</a> / <a href="services.html">Services</a> / <span id="bc"></span></div>
+<h1 id="t"></h1><p id="o" class="lead" style="margin:18px 0 26px;font-size:18px;color:#4b5563;max-width:540px"></p>
+<div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn p" href="#book">Request Quote</a><a class="btn o" href="#book">Book Consultation</a><a class="btn g" id="wa" target="_blank" rel="noopener">WhatsApp Enquiry</a></div></div><div class="big" id="ic" data-px="20"></div></div></section>
+<section><div class="wrap"><div class="grid g2"><div class="card rv"><h3>Benefits</h3><ul class="tick"><li>Requirements explained clearly before you start</li><li>Paperwork prepared and checked by our team</li><li>Fewer errors and avoidable delays</li><li>Support after the work is done</li></ul></div>
+<div class="card rv"><h3>Who needs this</h3><ul class="tick"><li>Startup founders and entrepreneurs</li><li>Small, medium and established businesses</li><li>Professionals and freelancers</li><li>Individuals who need this service</li></ul></div>
+<div class="card rv"><h3>Documents generally required</h3><ul class="tick"><li>Identity and address proof of applicants</li><li>Business details and registered address proof</li><li>Service-specific records we will list for you</li></ul></div>
+<div class="card rv"><h3>Key deliverables</h3><ul class="tick"><li>Completed filing or documentation</li><li>Copies of acknowledgements and records</li><li>Guidance on next steps</li></ul></div></div>
+<p style="margin-top:16px;color:#6b7280;font-size:13.5px">Eligibility, documents, fees and timelines depend on your case and on government rules. We confirm them with you during consultation. No approvals are guaranteed.</p></div></section>
+<section class="alt"><div class="wrap" style="max-width:760px"><div class="head rv"><h2>How it works</h2></div><div class="steps">
+<div class="step rv"><h3>Consultation</h3><p>We understand your needs and check applicability.</p></div><div class="step rv"><h3>Document collection</h3><p>You share the required documents securely.</p></div>
+<div class="step rv"><h3>Preparation and filing</h3><p>We prepare, review and submit.</p></div><div class="step rv"><h3>Updates and delivery</h3><p>We track progress and hand over the records.</p></div></div></div></section>
+<section><div class="wrap" style="max-width:760px"><div class="head rv"><h2>Frequently asked questions</h2></div><div id="faq"></div></div></section>
+<section class="alt"><div class="wrap"><div class="head rv"><h2>Related services</h2></div><div class="grid g3" id="rel"></div></div></section>
+<section><div class="wrap" style="max-width:640px" id="bk"></div></section>
+<script>window.SVC="ipo-readiness"</script><script src="app.js"></script><script>shell();
+const id=window.SVC||new URLSearchParams(location.search).get('s'),s=S.find(x=>x[1]==id)||S[0];
+document.title=s[2]+' | LegalSakha';$('#bc').textContent=s[2];$('#t').textContent=s[2];$('#t').className='split';$('#o').textContent=s[4];$('#ic').textContent=s[3];
+$('#wa').href='https://wa.me/'+WA+'?text='+encodeURIComponent('Hi LegalSakha, I need help with '+s[2]);
+$('#faq').innerHTML=[['What does this service include?','We handle the preparation, filing and follow-up for '+s[2]+'. Exact scope is confirmed during your consultation.'],['How long does it take?','It depends on your case and on the concerned authority. We share a realistic estimate after reviewing your details.'],['What will it cost?','Fees depend on the scope of work, plus any government charges. Request a quote and we will explain it clearly.'],['Which documents do I need?','We give you a checklist specific to your case once you book a consultation.']].map(f=>`<details class="fq rv"><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join('');
+$('#rel').innerHTML=S.filter(x=>x[0]==s[0]&&x!=s).slice(0,3).map(r=>`<a class="card rv" href="${link(r)}"><div class="ic">${r[3]}</div><h3>${r[2]}</h3><p>${r[4]}</p></a>`).join('');
+$('#bk').innerHTML=bookForm(s[1]);fx();</script></body></html>

@@ -1,0 +1,35 @@
+// Run: node build.js  -> regenerates all separate pages (one per service + main pages)
+const fs=require('fs');
+const src=fs.readFileSync('app.js','utf8');
+const vm=require('vm');const ctx={document:{addEventListener(){}}};vm.runInNewContext(src+';this.S=S;this.CATS=CATS',ctx);const S=ctx.S;
+const CATS=Object.fromEntries(Object.entries(ctx.CATS).map(([k,v])=>[k,v[0]]));
+const tpl=fs.readFileSync('template-service.html','utf8');
+const keep=new Set(['index','template-service','services','pricing','tools','knowledge-hub','about','contact',...S.map(s=>s[1])]);fs.readdirSync('.').filter(f=>f.endsWith('.html')&&!keep.has(f.slice(0,-5))).forEach(f=>fs.unlinkSync(f));
+S.forEach(s=>fs.writeFileSync(s[1]+'.html',tpl.replace('<!--SVC-->',`<script>window.SVC="${s[1]}"</script>`)));
+const HEAD=t=>`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.png"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"><title>${t} | LegalSakha</title></head><body>`;
+const hero=(t,p)=>`<section class="sh"><div class="wrap" style="grid-template-columns:1fr"><div><div class="crumb"><a href="index.html">Home</a> / ${t}</div><h1 class="split">${t}</h1><p style="margin-top:16px;font-size:18px;color:#4b5563;max-width:620px">${p}</p></div></div></section>`;
+const page=(file,t,intro,body,extra='')=>fs.writeFileSync(file,HEAD(t)+hero(t,intro)+body+`<script src="app.js"></script><script>shell();${extra}fx();</script></body></html>`);
+const card=(ic,h,p,href)=>`<${href?'a href="'+href+'"':'div'} class="card rv"><div class="ic">${ic}</div><h3>${h}</h3><p>${p}</p></${href?'a':'div'}>`;
+const form=`<section class="alt"><div class="wrap" style="max-width:640px"><div id="bk"></div></div></section>`;
+const f0="$('#bk').innerHTML=bookForm('');";
+// services
+page('services.html','Services','All the legal, tax, compliance and finance services you need, each with its own page.',
+`<section><div class="wrap"><div class="pills">${Object.entries(CATS).map(([k,n])=>`<a href="#${k}">${n}</a>`).join('')}</div>${Object.entries(CATS).map(([k,n])=>`<div class="cat" id="${k}"><h2>${n}</h2><div class="grid g3">${S.filter(s=>s[0]==k).map(s=>card(s[3],s[2],s[4],s[1]+'.html')).join('')}</div></div>`).join('')}</div></section>`);
+// pricing
+page('pricing.html','Pricing','Every business is different, so we quote based on what you actually need.',
+`<section><div class="wrap"><div class="grid g3">${card('🧩','Scope of work','Fees depend on the service, how many items are involved and how complete your records are.')}${card('🏛️','Government charges','Official fees are set by the authorities. We explain them separately from our professional fee.')}${card('💬','Free first conversation','Tell us what you need and we will share a clear quote after understanding your case.')}</div></div></section>${form}`,f0);
+// tools
+const goals=[['I want to start a company','private-limited-company'],['I want to start a partnership with limited liability','llp-registration'],['I want to sell or buy goods across states','gst'],['I want to protect my brand name','trademark'],['I want to import or export','import-export-code'],['I want a food business','fssai'],['I need funding for my business','funding-support'],['I need to keep my accounts in order','accounting']];
+page('tools.html','Tools','Quick helpers to plan your next step.',
+`<section><div class="wrap"><div class="grid g2"><div class="card rv"><h3>GST calculator</h3><p style="margin-bottom:12px">Enter your amount and the GST rate that applies to your goods or service.</p><form onsubmit="return false"><input id="amt" type="number" placeholder="Amount (₹)" oninput="gst()"><input id="rate" type="number" placeholder="GST rate (%)" oninput="gst()"><select id="mode" onchange="gst()"><option value="ex">Amount excludes GST</option><option value="in">Amount includes GST</option></select></form><p id="gres" style="margin-top:14px;font-weight:700;color:var(--navy)"></p></div>
+<div class="card rv"><h3>Which service do I need?</h3><p style="margin-bottom:12px">Pick your goal and we will point you to the right page.</p><select id="goal" onchange="goal()"><option value="">Choose your goal</option>${goals.map(g=>`<option value="${g[1]}">${g[0]}</option>`).join('')}</select><p id="gout" style="margin-top:14px"></p></div></div></div></section>`,
+`window.gst=()=>{const a=+$('#amt').value,r=+$('#rate').value,m=$('#mode').value;if(!a||isNaN(r)){$('#gres').textContent='';return}const base=m=='ex'?a:a/(1+r/100),g=base*r/100;$('#gres').innerHTML='Base: ₹'+base.toFixed(2)+'<br>GST: ₹'+g.toFixed(2)+'<br>Total: ₹'+(base+g).toFixed(2)};window.goal=()=>{const v=$('#goal').value,s=S.find(x=>x[1]==v);$('#gout').innerHTML=s?'<a class="btn p s" href="'+v+'.html" style="color:#fff">View '+s[2]+'</a>':''};`);
+// knowledge hub
+const kh=[['🏢','Pvt Ltd or LLP?','Both give limited liability. Pvt Ltd is often chosen when raising investment, while an LLP can suit professional and smaller partnerships.','private-limited-company'],['™️','Why register a trademark?','Registration gives your brand name or logo legal protection and a stronger position if someone copies it.','trademark'],['📑','GST basics','GST is the indirect tax on supply of goods and services. Registration requirements depend on turnover, type of supply and state.','gst'],['🏛️','What is ROC filing?','Companies and LLPs must file periodic returns and financial statements with the Registrar of Companies.','annual-filing'],['📒','Why bookkeeping matters','Clean books make tax filing, audits, loans and decisions much easier.','accounting'],['🚢','What is an IEC?','Import Export Code is a unique code generally needed to import or export from India.','import-export-code']];
+page('knowledge-hub.html','Knowledge Hub','Short, plain-language explainers on the basics. Rules change, so confirm details with our team.',`<section><div class="wrap"><div class="grid g3">${kh.map(k=>card(k[0],k[1],k[2],k[3]+'.html')).join('')}</div></div></section>`);
+// about
+page('about.html','About Us','LegalSakha means a friend for your business: Apka Business Apka Sathi.',
+`<section><div class="wrap">${ctx.founderCard()}</div></section><section class="alt"><div class="wrap"><div class="grid g3">${card('🎯','Our mission','To bring legal, tax, compliance and financial support for businesses together on one platform.')}${card('🤝','Our approach','Plain language, clear steps and a team that stays with you after the filing is done.')}${card('🔒','Your trust','Your documents and business details are handled with care and confidentiality.')}</div></div></section>${form}`,f0);
+// contact
+page('contact.html','Contact Us','Tell us what you need. We will get back to you.',`<section><div class="wrap" style="max-width:640px"><div id="bk"></div></div></section>`,f0);
+console.log(S.length+' service pages + 6 pages built');
